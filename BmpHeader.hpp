@@ -34,4 +34,22 @@ struct BITMAPINFOHEADER {
 };
 
 #pragma pack(pop)
+
+class BmpHeader {
+	private:
+		BITMAPFILEHEADER BmpFile;
+		BITMAPINFOHEADER BmpInfo;
+
+	public:
+		BmpHeader(uint32_t width, uint32_t height);
+
+		bool read(std::ifstream& file);
+		bool write(std:ofstream& file) const;
+
+
+
+
+
+}
+
 #endif

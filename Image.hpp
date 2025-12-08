@@ -25,9 +25,9 @@ class Image {
 		virtual void gaussianBlur() = 0;
 
 		//virtual getters
-		virtual uint32_t width() const = 0;
-		virtual uint32_t height() const = 0;
-		virtual uint32_t size() const = 0;
+		virtual uint32_t getWidth() const = 0;
+		virtual uint32_t getHeight() const = 0;
+		virtual uint32_t getSize() const = 0;
 };
 
 #endif

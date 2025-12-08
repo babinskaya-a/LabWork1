@@ -44,12 +44,35 @@ class BmpHeader {
 		BmpHeader(uint32_t width, uint32_t height);
 
 		bool read(std::ifstream& file);
-		bool write(std:ofstream& file) const;
+		bool write(std::ofstream& file) const;
+
+		uint32_t getWidth() const {
+			return BmpInfo.biWidth;
+		}
+		uint32_t getHeight() const {
+			return BmpInfo.biHeight;
+		}
+		uint32_t getImageSize() const {
+			return BmpInfo.biSizeImage;
+		}
+		uint32_t getDataOffset() const {
+			return BmpFile.bfPixel;
+		}
+		uint16_t getBitsPerPixel() const {
+			return BmpInfo.biBitCount;
+		}
 
 
+		void setWidth(uint32_t width) {
+			BmpInfo.biWidth = width;
+		}
+		void setHeight(uint32_t height) {
+			BmpInfo.biHeight = height;
+		}
+		void setImageSize(uint32_t size) {
+			BmpInfo.biSizeImage = size;
+		}
 
-
-
-}
+};
 
 #endif

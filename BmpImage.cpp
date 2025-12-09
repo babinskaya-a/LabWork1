@@ -89,3 +89,29 @@ void BmpImage::setPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b)
 	pixelData[index+2] = r;   //red color
 }
 
+//Clockwise rotation
+std::unique_ptr<Image> BmpImage::rotateCW() const {
+	int oldW = getWidth();
+	int oldH = getHeight();
+
+	auto newImg = std::make_unique<BmpImage>(); //empty copy of picture
+	newImg->header = header;
+	newImg->header.updateForRotation(oldH, oldW); //change width and height
+
+	int oldRowSize = calculateRowSize();
+	int newRowSize = newImg->calculateRowSize();
+	newImg->pixelData.resize(newRowSize * oldW);
+
+	for (int y = 0; y < oldH; y++) {
+		for (int x = 0; x < oldW; x++) {
+			int oldIndex = y * oldRowSize + x * 3;
+			int newX = oldH - 1 - y;
+			int newY = x;
+			int newIndex = newY * newRowSize + newX * 3;
+			newImg->pixelData[newIndex] = pixelData[oldIndex];
+			newImg->pixelData[newIndex+1] = pixelData[oldIndex+1];
+			newImg->pixelData[newIndex+2] = pixelData[oldIndex+2];
+		}
+	}
+	return newImg;
+}

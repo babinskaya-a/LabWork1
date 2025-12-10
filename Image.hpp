@@ -4,8 +4,8 @@
 * LabWork1
 */
 
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef IMAGE_HPP
+#define IMAGE_HPP
 
 #include <vector>
 #include <string>

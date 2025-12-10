@@ -4,6 +4,8 @@
 * LabWork1
 */
 
+#include "Image.hpp"
+#include "BmpHeader.hpp"
 #include "BmpImage.hpp"
 #include <iostream>
 #include <string>

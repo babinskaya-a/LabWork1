@@ -4,8 +4,8 @@
 * LabWork1
 */
 
-#ifndef BMPIMAGE_H
-#define BMPIMAGE_H
+#ifndef BMPIMAGE_HPP
+#define BMPIMAGE_HPP
 
 #include "Image.hpp"
 #include "BmpHeader.hpp"

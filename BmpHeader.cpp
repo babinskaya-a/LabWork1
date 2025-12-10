@@ -5,15 +5,24 @@
 */
 
 #include "BmpHeader.hpp"
+
 BmpHeader::BmpHeader(uint32_t width, uint32_t height) {
+	BmpFile.bfType = 0x4D42;
+	BmpFile.bfReserved1 = 0;
+	BmpFile.bfReserved2 = 0;
+	BmpFile.bfOffset = 54;
+
+	BmpInfo.biSize = 40;
 	BmpInfo.biWidth = width;
 	BmpInfo.biHeight = height;
+	BmpInfo.biPlanes = 1;
+	BmpInfo.biBitCount = 24;
+	BmpInfo.biCompression = 0;
 
 	uint32_t rowSize = ((width * 3 + 3) / 4) * 4;
 	BmpInfo.biSizeImage = rowSize * height;
-	BmpFile.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + BmpInfo.biSizeImage;
+	BmpFile.bfSize = 54 + BmpInfo.biSizeImage;
 }
-
 
 bool BmpHeader::read(std::ifstream& file) {
 	if (!file.read(reinterpret_cast<char*>(&BmpFile), sizeof(BmpFile))) {

@@ -18,7 +18,7 @@ run: $(TARGET) test.bmp
 	./$(TARGET)
 
 clean:
-	rm -f *.o $(TARGET) test.bmp
+	rm -f *.o $(TARGET)
 
 .PHONY: all run clean
 

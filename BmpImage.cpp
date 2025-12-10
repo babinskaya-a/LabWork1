@@ -27,12 +27,11 @@ bool BmpImage::load(const std::string& filename) {
 	header.read(file);
 	file.seekg(header.getDataOffset(), std::ios::beg); //going to proper position
 
-	uint32_t w = getWidth();
 	uint32_t h = getHeight();
 	uint32_t rowSize = calculateRowSize();
 	pixelData.resize(rowSize * h); //calculating size with paddings
 
-	for (int y = 0; y < h; y++) {
+	for (uint32_t y = 0; y < h; y++) {
 		int rowIndex = (h - 1 - y) * rowSize;
 		file.read((char*)&pixelData[rowIndex], rowSize); //read row to row in memory
 
@@ -43,16 +42,15 @@ bool BmpImage::load(const std::string& filename) {
 	return true;
 }
 
-bool BmpImage::save(const std::string& filename) const {
+bool BmpImage::save(const std::string& filename) {
 	std::ofstream file(filename, std::ios::binary);
 	header.write(file);
 
-	uint32_t w = getWidth();
 	uint32_t h = getHeight();
 	uint32_t rowSize = calculateRowSize();
 	int padding = calculatePadding();
 
-	for (int y = 0; y < h; y++) {
+	for (uint32_t y = 0; y < h; y++) {
 		int rowIndex = (h - 1 - y) * rowSize;
 		file.write((char*)&pixelData[rowIndex], rowSize);
 		for (int p = 0; p < padding; p++) {
@@ -182,3 +180,7 @@ void BmpImage::gaussianBlur() {
 	pixelData = newData;
 }
 
+uint32_t BmpImage::calculateRequiredMemory(uint32_t width, uint32_t height) {
+	uint32_t rowSize = ((width * 3 + 3) / 4) * 4;
+	return 54 + rowSize * height;
+}

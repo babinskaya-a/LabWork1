@@ -37,3 +37,10 @@ bool BmpHeader::write(std::ofstream& file) const {
 	}
 	return true;
 }
+void BmpHeader::updateForRotation(uint32_t newW, uint32_t newH) {
+	setWidth(newW);
+	setHeight(newH);
+	uint32_t rowSize = ((newW * 3 + 3) / 4) * 4;
+	setImageSize(rowSize * newH);
+	BmpFile.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + getImageSize();
+}

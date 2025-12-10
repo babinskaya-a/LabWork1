@@ -25,7 +25,7 @@ int main() {
 
 	std::cout << "width: " << image.getWidth() << " pixels\n";;
 	std::cout << "height: " << image.getHeight() << " pixels\n";
-	std::cout << "image size: " << image.getImageSize() << " bytes\n";
+	std::cout << "image size: " << image.getSize() << " bytes\n";
 
 	auto rotatedCW = image.rotateCW();
 	if (rotatedCW->save("rotated_cw.bmp")) {

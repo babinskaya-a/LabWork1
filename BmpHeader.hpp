@@ -41,10 +41,14 @@ class BmpHeader {
 		BITMAPINFOHEADER BmpInfo;
 
 	public:
+		BmpHeader() = default;
 		BmpHeader(uint32_t width, uint32_t height);
 
 		bool read(std::ifstream& file);
 		bool write(std::ofstream& file) const;
+
+		void updateForRotation(uint32_t newW, uint32_t newH);
+		void updateSize(uint32_t imageSize);
 
 		uint32_t getWidth() const {
 			return BmpInfo.biWidth;

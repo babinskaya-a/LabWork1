@@ -11,9 +11,10 @@
 #include "BmpHeader.hpp"
 #include <vector>
 
+
 class BmpImage : public Image {
 	private:
-		BmpHeader header(0, 0);
+		BmpHeader header;
 		std::vector<uint8_t> pixelData;
 
 		uint32_t calculateRowSize() const;
@@ -38,7 +39,8 @@ class BmpImage : public Image {
 			return header.getHeight();
 		}
 		uint32_t getSize() const override {
-			return header.getSize();
+			uint32_t rowSize = calculateRowSize();
+			return rowSize * getHeight();
 		}
 
 		void setPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b);

@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -I.
 TARGET = labwork1
 
-SRCS = main.cpp BmpHeader.cpp
+SRCS = main.cpp BmpHeader.cpp BmpImage.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(TARGET)
@@ -21,4 +21,5 @@ clean:
 	rm -f *.o $(TARGET) test.bmp
 
 .PHONY: all run clean
+
 

@@ -115,3 +115,70 @@ std::unique_ptr<Image> BmpImage::rotateCW() const {
 	}
 	return newImg;
 }
+
+//Counter Clockwise rotation
+std::unique_ptr<Image> BmpImage::rotateCCW() const {
+	int oldW = getWidth();
+        int oldH = getHeight();
+
+        auto newImg = std::make_unique<BmpImage>(); //empty copy of picture
+        newImg->header = header;
+        newImg->header.updateForRotation(oldH, oldW); //change width and height
+
+        int oldRowSize = calculateRowSize();
+        int newRowSize = newImg->calculateRowSize();
+        newImg->pixelData.resize(newRowSize * oldW);
+
+        for (int y = 0; y < oldH; y++) {
+                for (int x = 0; x < oldW; x++) {
+                        int oldIndex = y * oldRowSize + x * 3;
+                        int newX = y;
+                        int newY = oldW - 1 - x;
+                        int newIndex = newY * newRowSize + newX * 3;
+                        newImg->pixelData[newIndex] = pixelData[oldIndex];
+                        newImg->pixelData[newIndex+1] = pixelData[oldIndex+1];
+                        newImg->pixelData[newIndex+2] = pixelData[oldIndex+2];
+                }
+        }
+        return newImg;
+}
+
+//Gaussian Blur
+void BmpImage::gaussianBlur() {
+	int w = getWidth();
+	int h = getHeight();
+
+	if (w < 3 || h < 3) {
+		std::cout << "picture is too small for 3x3 kernel\n";
+		return;
+	}
+
+	int rowSize = calculateRowSize();
+	std::vector<uint8_t> newData = pixelData;
+
+	for (int y = 1; y < h-1; y++) {
+		for (int x = 1; x < w-1; x++) {
+			float sumB = 0, sumG = 0, sumR = 0;
+
+			for (int dy = -1; dy <= 1; dy++) {
+				for (int dx = -1; dx <= 1; dx++) {
+					int nx = x + dx;
+					int ny = y + dy;
+					int index = ny * rowSize + nx * 3;
+					sumB += pixelData[index];
+					sumG += pixelData[index+1];
+					sumR += pixelData[index+2];
+				}
+			}
+
+			int newIndex = y * rowSize + x * 3;
+			newData[newIndex] = static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, sumB)));
+			newData[newIndex + 1] = static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, sumG)));
+			newData[newIndex + 2] = static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, sumR)));
+
+		}
+	}
+
+	pixelData = newData;
+}
+

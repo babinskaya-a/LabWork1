@@ -20,8 +20,8 @@ class Image {
 		virtual bool load(const std::string& filename) = 0;
 		virtual bool save(const std::string& filename) = 0;
 
-		virtual std::unique_ptr<Image> rotateCW() const = 0; // Clock Wise rotation
-		virtual std::unique_ptr<Image> rotateCCW() const = 0; // Counter Clock Wise rotation
+		virtual std::unique_ptr<Image> rotateCW() const = 0; // Clockwise rotation
+		virtual std::unique_ptr<Image> rotateCCW() const = 0; // Counter Clockwise rotation
 		virtual void gaussianBlur() = 0;
 
 		//virtual getters

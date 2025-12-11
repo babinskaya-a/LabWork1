@@ -19,8 +19,6 @@ class BmpImage : public Image {
 
 		uint32_t calculateRowSize() const;
 		uint32_t calculatePadding() const;
-		void readPixelData(std::ifstream& file);
-		void writePixelData(std::ofstream& file) const;
 
 	public:
 		BmpImage() = default;

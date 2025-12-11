@@ -24,19 +24,25 @@ uint32_t BmpImage::calculatePadding() const {
 
 bool BmpImage::load(const std::string& filename) {
 	std::ifstream file(filename, std::ios::binary);
-	header.read(file);
+	if (!file.is_open()) {
+		return false;
+	}
+	if (!header.read(file) {
+		return false;
+	}
 	file.seekg(header.getDataOffset(), std::ios::beg); //going to proper position
 
 	uint32_t h = getHeight();
 	uint32_t rowSize = calculateRowSize();
-	pixelData.resize(rowSize * h); //calculating size with paddings
+	pixelData.assign(rowSize * h, 0);
 
 	for (uint32_t y = 0; y < h; y++) {
-		int rowIndex = (h - 1 - y) * rowSize;
+		uint32_t rowIndex = (h - 1 - y) * rowSize;
 		file.read((char*)&pixelData[rowIndex], rowSize); //read row to row in memory
 
-		int padding = calculatePadding();
-		file.seekg(padding, std::ios::cur); //replace cursor
+		if (!file.read(reinterpret_cast<char*>(&pixelData[rowIndex]), rowSize)) {
+			return false;
+		}
 	}
 
 	return true;
@@ -44,17 +50,21 @@ bool BmpImage::load(const std::string& filename) {
 
 bool BmpImage::save(const std::string& filename) {
 	std::ofstream file(filename, std::ios::binary);
-	header.write(file);
+	if (!file.is_open()) {
+		return false;
+	}
+	if (!header.write(file)) {
+		return false;
+	}
 
 	uint32_t h = getHeight();
 	uint32_t rowSize = calculateRowSize();
-	int padding = calculatePadding();
 
 	for (uint32_t y = 0; y < h; y++) {
-		int rowIndex = (h - 1 - y) * rowSize;
+		uint32_t rowIndex = (h - 1 - y) * rowSize;
 		file.write((char*)&pixelData[rowIndex], rowSize);
-		for (int p = 0; p < padding; p++) {
-			file.put(0); //adding zeros in the end
+		if (!file.write(reinterpret_cast<const char*>(&pixelData[rowIndex]), rowSize)) {
+			return false;
 		}
 	}
 	return true;
@@ -66,7 +76,6 @@ void BmpImage::getPixel(uint32_t x, uint32_t y, uint8_t& r, uint8_t& g, uint8_t&
 		r = g = b = 0;
 		return;
 	}
-
 	uint32_t rowSize = calculateRowSize();
 	uint32_t index = y * rowSize + x * 3;
 	b = pixelData[index]; //blue color
@@ -89,23 +98,23 @@ void BmpImage::setPixel(uint32_t x, uint32_t y, uint8_t r, uint8_t g, uint8_t b)
 
 //Clockwise rotation
 std::unique_ptr<Image> BmpImage::rotateCW() const {
-	int oldW = getWidth();
-	int oldH = getHeight();
+	uint32_t oldW = getWidth();
+	uint32_t oldH = getHeight();
 
 	auto newImg = std::make_unique<BmpImage>(); //empty copy of picture
 	newImg->header = header;
 	newImg->header.updateForRotation(oldH, oldW); //change width and height
 
-	int oldRowSize = calculateRowSize();
-	int newRowSize = newImg->calculateRowSize();
-	newImg->pixelData.resize(newRowSize * oldW);
+	uint32_t oldRowSize = calculateRowSize();
+	uint32_t newRowSize = newImg->calculateRowSize();
+	newImg->pixelData.assign(newRowSize * oldW, 0);
 
-	for (int y = 0; y < oldH; y++) {
-		for (int x = 0; x < oldW; x++) {
-			int oldIndex = y * oldRowSize + x * 3;
-			int newX = oldH - 1 - y;
-			int newY = x;
-			int newIndex = newY * newRowSize + newX * 3;
+	for (uint32_t y = 0; y < oldH; y++) {
+		for (uint32_t x = 0; x < oldW; x++) {
+			uint32_t oldIndex = y * oldRowSize + x * 3;
+			uint32_t newX = oldH - 1 - y;
+			uint32_t newY = x;
+			uint32_t newIndex = newY * newRowSize + newX * 3;
 			newImg->pixelData[newIndex] = pixelData[oldIndex];
 			newImg->pixelData[newIndex+1] = pixelData[oldIndex+1];
 			newImg->pixelData[newIndex+2] = pixelData[oldIndex+2];
@@ -116,23 +125,23 @@ std::unique_ptr<Image> BmpImage::rotateCW() const {
 
 //Counter Clockwise rotation
 std::unique_ptr<Image> BmpImage::rotateCCW() const {
-	int oldW = getWidth();
-        int oldH = getHeight();
+	uint32_t oldW = getWidth();
+        uint32_t oldH = getHeight();
 
         auto newImg = std::make_unique<BmpImage>(); //empty copy of picture
         newImg->header = header;
         newImg->header.updateForRotation(oldH, oldW); //change width and height
 
-        int oldRowSize = calculateRowSize();
-        int newRowSize = newImg->calculateRowSize();
-        newImg->pixelData.resize(newRowSize * oldW);
+        uint32_t oldRowSize = calculateRowSize();
+        uint32_t newRowSize = newImg->calculateRowSize();
+        newImg->pixelData.assign(newRowSize * oldW);
 
-        for (int y = 0; y < oldH; y++) {
-                for (int x = 0; x < oldW; x++) {
-                        int oldIndex = y * oldRowSize + x * 3;
-                        int newX = y;
-                        int newY = oldW - 1 - x;
-                        int newIndex = newY * newRowSize + newX * 3;
+        for (uint32_t y = 0; y < oldH; y++) {
+                for (uint32_t x = 0; x < oldW; x++) {
+                        uint32_t oldIndex = y * oldRowSize + x * 3;
+                        uint32_t newX = y;
+                        uint32_t newY = oldW - 1 - x;
+                        uint32_t newIndex = newY * newRowSize + newX * 3;
                         newImg->pixelData[newIndex] = pixelData[oldIndex];
                         newImg->pixelData[newIndex+1] = pixelData[oldIndex+1];
                         newImg->pixelData[newIndex+2] = pixelData[oldIndex+2];
@@ -143,36 +152,36 @@ std::unique_ptr<Image> BmpImage::rotateCCW() const {
 
 //Gaussian Blur
 void BmpImage::gaussianBlur() {
-	int w = getWidth();
-	int h = getHeight();
+	uint32_t w = getWidth();
+	uint32_t h = getHeight();
 
 	if (w < 3 || h < 3) {
 		std::cout << "picture is too small for 3x3 kernel\n";
 		return;
 	}
 
-	int rowSize = calculateRowSize();
+	uint32_t rowSize = calculateRowSize();
 	std::vector<uint8_t> newData = pixelData;
 
-	for (int y = 1; y < h-1; y++) {
-		for (int x = 1; x < w-1; x++) {
+	for (uint32_t y = 1; y < h-1; y++) {
+		for (uint32_t x = 1; x < w-1; x++) {
 			float sumB = 0, sumG = 0, sumR = 0;
 
-			for (int dy = -1; dy <= 1; dy++) {
-				for (int dx = -1; dx <= 1; dx++) {
-					int nx = x + dx;
-					int ny = y + dy;
-					int index = ny * rowSize + nx * 3;
+			for (uint32_t dy = -1; dy <= 1; dy++) {
+				for (uint32_t dx = -1; dx <= 1; dx++) {
+					uint32_t nx = x + dx;
+					uint32_t ny = y + dy;
+					uint32_t index = ny * rowSize + nx * 3;
 					sumB += pixelData[index];
 					sumG += pixelData[index+1];
 					sumR += pixelData[index+2];
 				}
 			}
 
-			int newIndex = y * rowSize + x * 3;
-			newData[newIndex] = static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, sumB)));
-			newData[newIndex + 1] = static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, sumG)));
-			newData[newIndex + 2] = static_cast<uint8_t>(std::max(0.0f, std::min(255.0f, sumR)));
+			uint32_t newIndex = y * rowSize + x * 3;
+			newData[newIndex] = static_cast<uint8_t>(std::clamp(sumB / 9.0f, 0.0f, 255.0f);
+			newData[newIndex + 1] = static_cast<uint8_t>(std::clamp(sumG / 9.0f0.0f,255.0f);
+			newData[newIndex + 2] = static_cast<uint8_t>(std::clamp(sumR / 9.0f, 0.0f, 255.0f);
 
 		}
 	}
@@ -182,5 +191,5 @@ void BmpImage::gaussianBlur() {
 
 uint32_t BmpImage::calculateRequiredMemory(uint32_t width, uint32_t height) {
 	uint32_t rowSize = ((width * 3 + 3) / 4) * 4;
-	return 54 + rowSize * height;
+	return sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + rowSize * height;
 }

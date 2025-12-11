@@ -38,7 +38,6 @@ bool BmpImage::load(const std::string& filename) {
 
 	for (uint32_t y = 0; y < h; y++) {
 		uint32_t rowIndex = (h - 1 - y) * rowSize;
-		file.read((char*)&pixelData[rowIndex], rowSize); //read row to row in memory
 
 		if (!file.read(reinterpret_cast<char*>(&pixelData[rowIndex]), rowSize)) {
 			return false;
@@ -62,7 +61,7 @@ bool BmpImage::save(const std::string& filename) {
 
 	for (uint32_t y = 0; y < h; y++) {
 		uint32_t rowIndex = (h - 1 - y) * rowSize;
-		file.write((char*)&pixelData[rowIndex], rowSize);
+
 		if (!file.write(reinterpret_cast<const char*>(&pixelData[rowIndex]), rowSize)) {
 			return false;
 		}

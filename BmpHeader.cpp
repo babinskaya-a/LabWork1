@@ -52,4 +52,5 @@ void BmpHeader::updateForRotation(uint32_t newW, uint32_t newH) {
 	uint32_t rowSize = ((newW * 3 + 3) / 4) * 4;
 	setImageSize(rowSize * newH);
 	BmpFile.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + getImageSize();
+	BmpFile.bfSize = BmpFile.bfOffset + getImageSize();
 }

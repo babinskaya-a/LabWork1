@@ -104,15 +104,8 @@ std::unique_ptr<Image> BmpImage::rotateCW() const {
 	newImg->header = header;
 	newImg->header.updateForRotation(oldH, oldW); //change width and height
 
-
-	uint32_t newW = newImg->getWidth();
-	uint32_t newH = newImg->getHeight();
-
-
-
-
 	uint32_t newRowSize = newImg->calculateRowSize();
-	newImg->pixelData.assign(newRowSize * newH, 0);
+	newImg->pixelData.assign(newRowSize * oldW, 0);
 
 	for (uint32_t y = 0; y < oldH; y++) {
 		for (uint32_t x = 0; x < oldW; x++) {
@@ -151,7 +144,7 @@ std::unique_ptr<Image> BmpImage::rotateCCW() const {
         }
         return newImg;
 }
-/*
+
 
 //Gaussian Blur
 void BmpImage::gaussianBlur() {
@@ -163,94 +156,46 @@ void BmpImage::gaussianBlur() {
 		return;
 	}
 
+	//gaussian kernel
+	static const float kernel[3][3] = {
+		{1.0f/16, 2.0f/16, 1.0f/16},
+		{2.0f/16, 4.0f/16, 2.0f/16},
+		{1.0f/16, 2.0f/16, 1.0f/16}
+	};
+
 	std::vector<uint8_t> newData = pixelData;
+	uint32_t rowSize = calculateRowSize();
 
-	for (uint32_t y = 1; y < h-1; y++) {
-		for (uint32_t x = 1; x < w-1; x++) {
-			float sumB = 0, sumG = 0, sumR = 0;
+	for (uint32_t y = 0; y < h; y++) {
+		for (uint32_t x = 0; x < w; x++) {
+			float sumR = 0.0f, sumG = 0.0f, sumB = 0.0f;
 
-			for (uint32_t dy = -1; dy <= 1; dy++) {
-				for (uint32_t dx = -1; dx <= 1; dx++) {
+			for (int dy = -1; dy <= 1; dy++) {
+				for (int dx = -1; dx <= 1; dx++) {
+
+					int nx = static_cast<int>(x) + dx;
+					int ny = static_cast<int>(y) + dy;
+
+					if (nx < 0) nx = 0;
+					if (nx >= static_cast<int>(w)) nx = w - 1;
+					if (ny < 0) ny = 0;
+					if (ny >= static_cast<int>(h)) ny = h - 1;
+
 					uint8_t r, g, b;
-					getPixel(x + dx, y + dy, r, g, b);
-					sumR += r;
-					sumG += g;
-					sumB += b;
+					getPixel(nx, ny, r, g, b);
+					float weight = kernel[dy + 1][dx + 1];
+					sumR += r * weight;
+					sumG += g * weight;
+					sumB += b * weight;
 				}
 			}
-
-			uint8_t r = static_cast<uint8_t>(std::clamp(sumR / 9.0f, 0.0f, 255.0f));
-			uint8_t g = static_cast<uint8_t>(std::clamp(sumG / 9.0f, 0.0f, 255.0f));
-			uint8_t b = static_cast<uint8_t>(std::clamp(sumB / 9.0f, 0.0f, 255.0f));
-			uint32_t rowSize = calculateRowSize();
-			uint32_t index = y * rowSize + x * 3;
-			newData[index] = b;
-			newData[index + 1] = g;
-			newData[index + 2] = r;
+			newData[y * rowSize + x * 3]     = static_cast<uint8_t>(std::clamp(sumB, 0.0f, 255.0f));
+			newData[y * rowSize + x * 3 + 1] = static_cast<uint8_t>(std::clamp(sumG, 0.0f, 255.0f));
+			newData[y * rowSize + x * 3 + 2] = static_cast<uint8_t>(std::clamp(sumR, 0.0f, 255.0f));
 		}
 	}
-
-	pixelData = newData;
+	pixelData = std::move(newData);
 }
-
-
-*/
-
-
-
-void BmpImage::gaussianBlur() {
-    uint32_t w = getWidth();
-    uint32_t h = getHeight();
-
-    if (w < 3 || h < 3) {
-        std::cout << "picture is too small for 3x3 kernel\n";
-        return;
-    }
-
-    static const float kernel[3][3] = {
-        {1.0f/16, 2.0f/16, 1.0f/16},
-        {2.0f/16, 4.0f/16, 2.0f/16},
-        {1.0f/16, 2.0f/16, 1.0f/16}
-    };
-
-    std::vector<uint8_t> newData = pixelData;
-    uint32_t rowSize = calculateRowSize();
-
-    for (uint32_t y = 0; y < h; y++) {
-        for (uint32_t x = 0; x < w; x++) {
-            float sumR = 0.0f, sumG = 0.0f, sumB = 0.0f;
-
-            for (int dy = -1; dy <= 1; dy++) {
-                for (int dx = -1; dx <= 1; dx++) {
-
-                    int nx = static_cast<int>(x) + dx;
-                    int ny = static_cast<int>(y) + dy;
-
-                    if (nx < 0) nx = 0;
-                    if (nx >= static_cast<int>(w)) nx = w - 1;
-                    if (ny < 0) ny = 0;
-                    if (ny >= static_cast<int>(h)) ny = h - 1;
-
-                    uint8_t r, g, b;
-                    getPixel(nx, ny, r, g, b);
-
-                    float weight = kernel[dy + 1][dx + 1];
-                    sumR += r * weight;
-                    sumG += g * weight;
-                    sumB += b * weight;
-                }
-            }
-
-            newData[y * rowSize + x * 3]     = static_cast<uint8_t>(std::clamp(sumB, 0.0f, 255.0f));
-            newData[y * rowSize + x * 3 + 1] = static_cast<uint8_t>(std::clamp(sumG, 0.0f, 255.0f));
-            newData[y * rowSize + x * 3 + 2] = static_cast<uint8_t>(std::clamp(sumR, 0.0f, 255.0f));
-        }
-    }
-
-    pixelData = std::move(newData);
-}
-
-
 
 
 uint32_t BmpImage::calculateRequiredMemory(uint32_t width, uint32_t height) {

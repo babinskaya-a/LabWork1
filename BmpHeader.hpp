@@ -21,8 +21,8 @@ struct BITMAPFILEHEADER {
 
 struct BITMAPINFOHEADER {
 	uint32_t biSize; //struct size
-	uint32_t  biWidth; // struct wight
-	uint32_t  biHeight; // struct height
+	int32_t  biWidth; // struct wight
+	int32_t  biHeight; // struct height
 	uint16_t biPlanes; // plane number (always 1)
 	uint16_t biBitCount; // 8R + 8G + 8B
 	uint32_t biCompression; // without compression

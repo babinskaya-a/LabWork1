@@ -114,7 +114,7 @@ std::unique_ptr<Image> BmpImage::rotateCW() const {
 
 			uint32_t newX = oldH - 1 - y;
 			uint32_t newY = x;
-			newImg->setPixel(newX, newY, r, g, b);
+			newImg->setPixel(newX, newY, b, g, r);
 		}
 	}
 	return newImg;

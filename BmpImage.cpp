@@ -104,19 +104,17 @@ std::unique_ptr<Image> BmpImage::rotateCW() const {
 	newImg->header = header;
 	newImg->header.updateForRotation(oldH, oldW); //change width and height
 
-	uint32_t oldRowSize = calculateRowSize();
 	uint32_t newRowSize = newImg->calculateRowSize();
 	newImg->pixelData.assign(newRowSize * oldW, 0);
 
 	for (uint32_t y = 0; y < oldH; y++) {
 		for (uint32_t x = 0; x < oldW; x++) {
-			uint32_t oldIndex = y * oldRowSize + x * 3;
+			uint8_t r, g, b;
+			getPixel(x, y, r, g, b);
+
 			uint32_t newX = oldH - 1 - y;
 			uint32_t newY = x;
-			uint32_t newIndex = newY * newRowSize + newX * 3;
-			newImg->pixelData[newIndex] = pixelData[oldIndex];
-			newImg->pixelData[newIndex+1] = pixelData[oldIndex+1];
-			newImg->pixelData[newIndex+2] = pixelData[oldIndex+2];
+			newImg->setPixel(newX, newY, r, g, b);
 		}
 	}
 	return newImg;
@@ -131,19 +129,17 @@ std::unique_ptr<Image> BmpImage::rotateCCW() const {
         newImg->header = header;
         newImg->header.updateForRotation(oldH, oldW); //change width and height
 
-        uint32_t oldRowSize = calculateRowSize();
         uint32_t newRowSize = newImg->calculateRowSize();
         newImg->pixelData.assign(newRowSize * oldW, 0);
 
         for (uint32_t y = 0; y < oldH; y++) {
                 for (uint32_t x = 0; x < oldW; x++) {
-                        uint32_t oldIndex = y * oldRowSize + x * 3;
+                        uint8_t r, g, b;
+			getPixel(x, y, r, g, b);
+
                         uint32_t newX = y;
                         uint32_t newY = oldW - 1 - x;
-                        uint32_t newIndex = newY * newRowSize + newX * 3;
-                        newImg->pixelData[newIndex] = pixelData[oldIndex];
-                        newImg->pixelData[newIndex+1] = pixelData[oldIndex+1];
-                        newImg->pixelData[newIndex+2] = pixelData[oldIndex+2];
+			newImg->setPixel(newX, newY, r, g, b);
                 }
         }
         return newImg;

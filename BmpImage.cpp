@@ -114,7 +114,7 @@ std::unique_ptr<Image> BmpImage::rotateCW() const {
 
 			uint32_t newX = oldH - 1 - y;
 			uint32_t newY = x;
-			newImg->setPixel(newX, newY, r, g, b);
+			newImg->setPixel(newX, newY, b, g, r);
 		}
 	}
 	return newImg;
@@ -139,7 +139,7 @@ std::unique_ptr<Image> BmpImage::rotateCCW() const {
 
                         uint32_t newX = y;
                         uint32_t newY = oldW - 1 - x;
-			newImg->setPixel(newX, newY, r, g, b);
+			newImg->setPixel(newX, newY, b, g, r);
                 }
         }
         return newImg;
@@ -155,7 +155,6 @@ void BmpImage::gaussianBlur() {
 		return;
 	}
 
-	uint32_t rowSize = calculateRowSize();
 	std::vector<uint8_t> newData = pixelData;
 
 	for (uint32_t y = 1; y < h-1; y++) {
@@ -164,20 +163,18 @@ void BmpImage::gaussianBlur() {
 
 			for (uint32_t dy = -1; dy <= 1; dy++) {
 				for (uint32_t dx = -1; dx <= 1; dx++) {
-					uint32_t nx = x + dx;
-					uint32_t ny = y + dy;
-					uint32_t index = ny * rowSize + nx * 3;
-					sumB += pixelData[index];
-					sumG += pixelData[index+1];
-					sumR += pixelData[index+2];
+					uint8_t r, g, b;
+					getPixel(x + dx, y + dy, r, g, b);
+					sumR += r;
+					sumG += g;
+					sumB += b;
 				}
 			}
 
-			uint32_t newIndex = y * rowSize + x * 3;
-			newData[newIndex] = static_cast<uint8_t>(std::clamp(sumB / 9.0f, 0.0f, 255.0f));
-			newData[newIndex + 1] = static_cast<uint8_t>(std::clamp(sumG / 9.0f, 0.0f,255.0f));
-			newData[newIndex + 2] = static_cast<uint8_t>(std::clamp(sumR / 9.0f, 0.0f, 255.0f));
-
+			uint8_t r = static_cast<uint8_t>(std::clamp(sumR / 9.0f, 0.0f, 255.0f));
+			uint8_t g = static_cast<uint8_t>(std::clamp(sumG / 9.0f, 0.0f, 255.0f));
+			uint8_t b = static_cast<uint8_t>(std::clamp(sumB / 9.0f, 0.0f, 255.0f));
+			setPixel(x, y, b, g, r);
 		}
 	}
 

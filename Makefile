@@ -1,25 +1,22 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -I.
-TARGET = labwork1
+CXXFLAGS = -std=c++17 -Wall -Wextra -O2
 
-SRCS = main.cpp BmpHeader.cpp BmpImage.cpp
-OBJS = $(SRCS:.cpp=.o)
+SRC = main.cpp BmpHeader.cpp BmpImage.cpp
+OBJ = $(SRC:.cpp=.o)
+TARGET = program
 
 all: $(TARGET)
 
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+$(TARGET): $(OBJ)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJ)
 
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $<
 
-
-run: $(TARGET) test.bmp
+run: all
 	./$(TARGET)
 
 clean:
-	rm -f *.o $(TARGET)
+	rm -f $(OBJ) $(TARGET)
 
 .PHONY: all run clean
-
-

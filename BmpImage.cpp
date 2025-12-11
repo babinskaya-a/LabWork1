@@ -27,7 +27,7 @@ bool BmpImage::load(const std::string& filename) {
 	if (!file.is_open()) {
 		return false;
 	}
-	if (!header.read(file) {
+	if (!header.read(file)) {
 		return false;
 	}
 	file.seekg(header.getDataOffset(), std::ios::beg); //going to proper position
@@ -134,7 +134,7 @@ std::unique_ptr<Image> BmpImage::rotateCCW() const {
 
         uint32_t oldRowSize = calculateRowSize();
         uint32_t newRowSize = newImg->calculateRowSize();
-        newImg->pixelData.assign(newRowSize * oldW);
+        newImg->pixelData.assign(newRowSize * oldW, 0);
 
         for (uint32_t y = 0; y < oldH; y++) {
                 for (uint32_t x = 0; x < oldW; x++) {
@@ -179,9 +179,9 @@ void BmpImage::gaussianBlur() {
 			}
 
 			uint32_t newIndex = y * rowSize + x * 3;
-			newData[newIndex] = static_cast<uint8_t>(std::clamp(sumB / 9.0f, 0.0f, 255.0f);
-			newData[newIndex + 1] = static_cast<uint8_t>(std::clamp(sumG / 9.0f0.0f,255.0f);
-			newData[newIndex + 2] = static_cast<uint8_t>(std::clamp(sumR / 9.0f, 0.0f, 255.0f);
+			newData[newIndex] = static_cast<uint8_t>(std::clamp(sumB / 9.0f, 0.0f, 255.0f));
+			newData[newIndex + 1] = static_cast<uint8_t>(std::clamp(sumG / 9.0f, 0.0f,255.0f));
+			newData[newIndex + 2] = static_cast<uint8_t>(std::clamp(sumR / 9.0f, 0.0f, 255.0f));
 
 		}
 	}

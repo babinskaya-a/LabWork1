@@ -114,7 +114,7 @@ std::unique_ptr<Image> BmpImage::rotateCW() const {
 
 			uint32_t newX = oldH - 1 - y;
 			uint32_t newY = x;
-			newImg->setPixel(newX, newY, b, g, r);
+			newImg->setPixel(newX, newY, r, g, b);
 		}
 	}
 	return newImg;
@@ -139,7 +139,7 @@ std::unique_ptr<Image> BmpImage::rotateCCW() const {
 
                         uint32_t newX = y;
                         uint32_t newY = oldW - 1 - x;
-			newImg->setPixel(newX, newY, b, g, r);
+			newImg->setPixel(newX, newY, r, g, b);
                 }
         }
         return newImg;
@@ -174,7 +174,11 @@ void BmpImage::gaussianBlur() {
 			uint8_t r = static_cast<uint8_t>(std::clamp(sumR / 9.0f, 0.0f, 255.0f));
 			uint8_t g = static_cast<uint8_t>(std::clamp(sumG / 9.0f, 0.0f, 255.0f));
 			uint8_t b = static_cast<uint8_t>(std::clamp(sumB / 9.0f, 0.0f, 255.0f));
-			setPixel(x, y, b, g, r);
+			uint32_t rowSize = calculateRowSize();
+			uint32_t index = y * rowSize + x * 3;
+			newData[index] = b;
+			newData[index + 1] = g;
+			newData[index + 2] = r;
 		}
 	}
 

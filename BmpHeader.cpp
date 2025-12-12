@@ -6,51 +6,59 @@
 
 #include "BmpHeader.hpp"
 
-BmpHeader::BmpHeader(uint32_t width, uint32_t height) {
-	BmpFile.bfType = 0x4D42;
-	BmpFile.bfReserved1 = 0;
-	BmpFile.bfReserved2 = 0;
-	BmpFile.bfOffset = 54;
+BmpHeader::BmpHeader(uint32_t width, uint32_t height)
+{
+    BmpFile.bfType = 0x4D42;
+    BmpFile.bfReserved1 = 0;
+    BmpFile.bfReserved2 = 0;
+    BmpFile.bfOffset = 54;
 
-	BmpInfo.biSize = 40;
-	BmpInfo.biWidth = width;
-	BmpInfo.biHeight = height;
-	BmpInfo.biPlanes = 1;
-	BmpInfo.biBitCount = 24;
-	BmpInfo.biCompression = 0;
+    BmpInfo.biSize = 40;
+    BmpInfo.biWidth = width;
+    BmpInfo.biHeight = height;
+    BmpInfo.biPlanes = 1;
+    BmpInfo.biBitCount = 24;
+    BmpInfo.biCompression = 0;
 
-	uint32_t rowSize = ((width * 3 + 3) / 4) * 4;
-	BmpInfo.biSizeImage = rowSize * height;
-	BmpFile.bfSize = 54 + BmpInfo.biSizeImage;
+    uint32_t rowSize = ((width * 3 + 3) / 4) * 4;
+    BmpInfo.biSizeImage = rowSize * height;
+    BmpFile.bfSize = 54 + BmpInfo.biSizeImage;
 }
 
-bool BmpHeader::read(std::ifstream& file) {
-	if (!file.read(reinterpret_cast<char*>(&BmpFile), sizeof(BmpFile))) {
-		return false;
-	}
-	if (BmpFile.bfType != 0x4D42) {
-		return false;
-	}
-	if (!file.read(reinterpret_cast<char*>(&BmpInfo), sizeof(BmpInfo))) {
-		return false;
-	}
-	return true;
+bool BmpHeader::read(std::ifstream& file)
+{
+    if (!file.read(reinterpret_cast<char*>(&BmpFile), sizeof(BmpFile)))
+    {
+        return false;
+    }
+    if (BmpFile.bfType != 0x4D42)
+    {
+        return false;
+    }
+    if (!file.read(reinterpret_cast<char*>(&BmpInfo), sizeof(BmpInfo)))
+    {
+        return false;
+    }
+    return true;
 }
 
-bool BmpHeader::write(std::ofstream& file) const {
-	if (!file.write(reinterpret_cast<const char*>(&BmpFile), sizeof(BmpFile))) {
-		return false;
-	}
-	if (!file.write(reinterpret_cast<const char*>(&BmpInfo), sizeof(BmpInfo))) {
-		return false;
-	}
-	return true;
+bool BmpHeader::write(std::ofstream& file) const
+{
+    if (!file.write(reinterpret_cast<const char*>(&BmpFile), sizeof(BmpFile)))
+    {
+        return false;
+    }
+    if (!file.write(reinterpret_cast<const char*>(&BmpInfo), sizeof(BmpInfo)))
+    {
+        return false;
+    }
+    return true;
 }
-void BmpHeader::updateForRotation(uint32_t newW, uint32_t newH) {
-	setWidth(newW);
-	setHeight(newH);
-	uint32_t rowSize = ((newW * 3 + 3) / 4) * 4;
-	setImageSize(rowSize * newH);
-	BmpFile.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + getImageSize();
-	BmpFile.bfSize = BmpFile.bfOffset + getImageSize();
+void BmpHeader::updateForRotation(uint32_t newW, uint32_t newH)
+{
+    setWidth(newW);
+    setHeight(newH);
+    uint32_t rowSize = ((newW * 3 + 3) / 4) * 4;
+    setImageSize(rowSize * newH);
+    BmpFile.bfSize = BmpFile.bfOffset + getImageSize();
 }

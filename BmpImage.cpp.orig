@@ -60,7 +60,7 @@ bool BmpImage::save(const std::string& filename) {
 	uint32_t rowSize = calculateRowSize();
 
 	for (uint32_t y = 0; y < h; y++) {
-		uint32_t rowIndex = (h - 1 - y) * rowSize;
+		uint32_t rowIndex = y * rowSize;
 
 		if (!file.write(reinterpret_cast<const char*>(&pixelData[rowIndex]), rowSize)) {
 			return false;

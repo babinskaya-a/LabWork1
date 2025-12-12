@@ -43,7 +43,7 @@ bool BmpImage::load(const std::string& filename)
 
     for (uint32_t y = 0; y < h; y++)
     {
-        uint32_t rowIndex = (h - 1 - y) * rowSize;
+        uint32_t rowIndex = y * rowSize;
 
         if (!file.read(reinterpret_cast<char*>(&pixelData[rowIndex]), rowSize))
         {

@@ -54,6 +54,8 @@ bool BmpImage::load(const std::string& filename)
     return true;
 }
 
+
+
 bool BmpImage::save(const std::string& filename)
 {
     std::ofstream file(filename, std::ios::binary);

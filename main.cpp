@@ -23,7 +23,7 @@ int main()
         std::cout << "failed to load image\n";
         return 1;
     }
-
+	image.save("copy.bmp");
     uint32_t memory = BmpImage::calculateRequiredMemory(image.getWidth(), image.getHeight());
     std::cout << "required memory for image: " << memory << " bytes\n";
 

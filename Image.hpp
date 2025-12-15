@@ -19,7 +19,7 @@ public:
 
     //pure virtual methods
     virtual bool load(const std::string& filename) = 0;
-    virtual bool save(const std::string& filename) = 0;
+    virtual bool save(const std::string& filename) const = 0;
 
     virtual std::unique_ptr<Image> rotateCW() const = 0; // Clockwise rotation
     virtual std::unique_ptr<Image> rotateCCW() const = 0; // Counter Clockwise rotation

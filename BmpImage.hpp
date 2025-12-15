@@ -25,7 +25,7 @@ public:
     BmpImage() = default;
 
     bool load(const std::string& filename) override;
-    bool save(const std::string& filename) override;
+    bool save(const std::string& filename) const override;
     std::unique_ptr<Image> rotateCW() const override;
     std::unique_ptr<Image> rotateCCW() const override;
     void gaussianBlur() override;

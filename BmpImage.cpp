@@ -35,11 +35,13 @@ bool BmpImage::load(const std::string& filename)
     {
         return false;
     }
-    file.seekg(header.getDataOffset(), std::ios::beg); //going to proper position
 
     uint32_t h = getHeight();
     uint32_t rowSize = calculateRowSize();
     pixelData.assign(rowSize * h, 0);
+
+    file.seekg(header.getDataOffset(), std::ios::beg); //going to proper position
+
 
     for (uint32_t y = 0; y < h; y++)
     {
@@ -56,7 +58,7 @@ bool BmpImage::load(const std::string& filename)
 
 
 
-bool BmpImage::save(const std::string& filename)
+bool BmpImage::save(const std::string& filename) const
 {
     std::ofstream file(filename, std::ios::binary);
     if (!file.is_open())
@@ -73,7 +75,7 @@ bool BmpImage::save(const std::string& filename)
 
     for (uint32_t y = 0; y < h; y++)
     {
-        uint32_t rowIndex = (h - 1 - y) * rowSize;
+        uint32_t rowIndex = y * rowSize;
 
         if (!file.write(reinterpret_cast<const char*>(&pixelData[rowIndex]), rowSize))
         {

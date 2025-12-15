@@ -14,11 +14,15 @@ BmpHeader::BmpHeader(uint32_t width, uint32_t height)
     BmpFile.bfOffset = 54;
 
     BmpInfo.biSize = 40;
-    BmpInfo.biWidth = width;
-    BmpInfo.biHeight = height;
+    BmpInfo.biWidth = static_cast<int32_t>(width);
+    BmpInfo.biHeight = static_cast<int32_t>(height);
     BmpInfo.biPlanes = 1;
     BmpInfo.biBitCount = 24;
     BmpInfo.biCompression = 0;
+    BmpInfo.biXPelsPerMeter = 0;
+    BmpInfo.biYPelsPerMeter = 0;
+    BmpInfo.biClrUsed = 0;
+    BmpInfo.biClrImportant = 0;
 
     uint32_t rowSize = ((width * 3 + 3) / 4) * 4;
     BmpInfo.biSizeImage = rowSize * height;
@@ -61,8 +65,4 @@ void BmpHeader::updateForRotation(uint32_t newW, uint32_t newH)
     uint32_t rowSize = ((newW * 3 + 3) / 4) * 4;
     setImageSize(rowSize * newH);
     BmpFile.bfSize = BmpFile.bfOffset + getImageSize();
-
-    BmpInfo.biPlanes = 1;
-    BmpInfo.biBitCount = 24;
-    BmpInfo.biCompression = 0;
 }

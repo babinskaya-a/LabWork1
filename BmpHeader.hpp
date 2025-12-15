@@ -29,6 +29,10 @@ struct BITMAPINFOHEADER
     uint16_t biBitCount; // 8R + 8G + 8B
     uint32_t biCompression; // without compression
     uint32_t biSizeImage; // image data size
+    uint32_t biXPelsPerMeter; // (заглушки)
+    uint32_t biYPelsPerMeter;
+    uint32_t biClrUsed;
+    uint32_t biClrImportant;
 };
 
 #pragma pack(pop)
@@ -50,11 +54,11 @@ public:
 
     uint32_t getWidth() const
     {
-        return BmpInfo.biWidth;
+        return static_cast<uint32_t>(BmpInfo.biWidth);
     }
     uint32_t getHeight() const
     {
-        return BmpInfo.biHeight;
+        return static_cast<uint32_t>(BmpInfo.biHeight);
     }
     uint32_t getImageSize() const
     {
@@ -72,11 +76,11 @@ public:
 
     void setWidth(uint32_t width)
     {
-        BmpInfo.biWidth = width;
+        BmpInfo.biWidth = static_cast<uint32_t>(width);
     }
     void setHeight(uint32_t height)
     {
-        BmpInfo.biHeight = height;
+        BmpInfo.biHeight = static_cast<uint32_t>(height);
     }
     void setImageSize(uint32_t size)
     {

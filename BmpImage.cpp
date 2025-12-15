@@ -45,7 +45,7 @@ bool BmpImage::load(const std::string& filename)
 
     for (uint32_t y = 0; y < h; y++)
     {
-        uint32_t rowIndex = y * rowSize;
+        uint32_t rowIndex = (h - 1 - y) * rowSize;
 
         if (!file.read(reinterpret_cast<char*>(&pixelData[rowIndex]), rowSize))
         {
@@ -75,7 +75,7 @@ bool BmpImage::save(const std::string& filename) const
 
     for (uint32_t y = 0; y < h; y++)
     {
-        uint32_t rowIndex = y * rowSize;
+        uint32_t rowIndex =(h - 1 - y) * rowSize;
 
         if (!file.write(reinterpret_cast<const char*>(&pixelData[rowIndex]), rowSize))
         {
@@ -137,7 +137,7 @@ std::unique_ptr<Image> BmpImage::rotateCW() const
 
             uint32_t newX = oldH - 1 - y;
             uint32_t newY = x;
-            newImg->setPixel(newX, newY, g, b, r);
+            newImg->setPixel(newX, newY, r, g, b);
         }
     }
     return newImg;
@@ -165,7 +165,7 @@ std::unique_ptr<Image> BmpImage::rotateCCW() const
 
             uint32_t newX = y;
             uint32_t newY = oldW - 1 - x;
-            newImg->setPixel(newX, newY, g, b, r);
+            newImg->setPixel(newX, newY, r, g, b);
         }
     }
     return newImg;

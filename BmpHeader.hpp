@@ -29,10 +29,10 @@ struct BITMAPINFOHEADER
     uint16_t biBitCount; // 8R + 8G + 8B
     uint32_t biCompression; // without compression
     uint32_t biSizeImage; // image data size
-    uint32_t biXPelsPerMeter; // (заглушки)
-    uint32_t biYPelsPerMeter;
-    uint32_t biClrUsed;
-    uint32_t biClrImportant;
+    uint32_t biXPelsPerMeter; // X resolution (4 bytes)
+    uint32_t biYPelsPerMeter; // Y resolution (4 bytes)
+    uint32_t biClrUsed; // colors used (4 bytes)
+    uint32_t biClrImportant; // important colors (4 bytes)
 };
 
 #pragma pack(pop)
@@ -49,7 +49,6 @@ public:
 
     bool read(std::ifstream& file);
     bool write(std::ofstream& file) const;
-
     void updateForRotation(uint32_t newW, uint32_t newH);
 
     uint32_t getWidth() const
